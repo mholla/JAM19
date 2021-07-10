@@ -13,6 +13,7 @@ if __name__ == '__main__':
     ####################################################################################
     
     n_values = 100
+    n_H_m = 200
 
     betas_1 = numpy.linspace(0.02, 0.98, n_values)  # softer layer (beta < 1)
     betas_2 = numpy.linspace(1.02, 2, n_values)  # stiffer layer (beta > 1)
@@ -40,10 +41,11 @@ if __name__ == '__main__':
     plot_fig3(betas, H_ms, threshold_strain, anti_threshold_strain)
     plot_fig4a(betas, H_ms, threshold_strain)
     plot_fig4b(betas, H_ms, threshold_wavelength)
-    plot_fig5a(critical_strains, betas)
-    plot_fig5b(critical_strains)
-    plot_fig6(critical_strains)
-    plot_fig7a(H_ms, threshold_strain, anti_threshold_strain)
-    plot_fig7b(threshold_wavelength, anti_threshold_wavelength)
+    plot_fig5a(betas, threshold_wavelength,new_cmap)
+    plot_fig5b(critical_strains,new_cmap)
+    plot_fig6(critical_strains,new_cmap)
+    plot_fig7a(H_ms, threshold_strain, anti_threshold_strain,new_cmap)
+    plot_fig7b(H_ms, threshold_wavelength, anti_threshold_wavelength,new_cmap)
+
 
 

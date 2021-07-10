@@ -248,7 +248,7 @@ def find_critical_values(mode_factor, H_l, H_m, beta, wavelengths, npts, plotroo
 
     Notes
     -----
-    Called by 19JAM.py
+    Called by JAM19.py
     """
 
     lam_min = 0.01
@@ -309,10 +309,10 @@ def check_roots(mode_factor, H_l, H_m, beta, wavelength, lam_min, lam_max, npts,
     c = 0.  # upper bracket
 
     # move backwards, in order of decreasing strain and report values bracking highest root
-    for i in range(n):
+    for i in range(npts):
 
         lam = lams[i]
-        dds[i] = determinant(H_l, H_m, lam, beta, wavelength, mode_factor)
+        dds[i] = determinant(mode_factor, H_l, H_m, beta, wavelength, lam)
 
         # if encountering NaN before finding root:
         if isnan(dds[i]) and not rootexists:
@@ -329,6 +329,7 @@ def check_roots(mode_factor, H_l, H_m, beta, wavelength, lam_min, lam_max, npts,
                 rootexists = True
                 a = lams[i]
                 c = lams[i - 1]
+                break
 
     if plotroots:
         plt.figure()

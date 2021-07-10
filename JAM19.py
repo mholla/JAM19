@@ -5,11 +5,11 @@ from math import *
 
 import numpy
 
-from JAM19_Subroutine import *
+from JAM19_subroutines import *
 
 warnings.simplefilter('ignore')
 
-def solve(H_m_start, segment, mode_name, mode_factor, params):
+def solve(H_m_start, segment, mode_name, mode_factor, params, output_options):
     """ parallel calculations of threshold values for each wrinkling mode
 
     Parameters
@@ -31,8 +31,9 @@ def solve(H_m_start, segment, mode_name, mode_factor, params):
     Each part returns the critical and threshold values for all beta values and only 50 values of H_m.
 
     """
+    [findroots, plotroots, printoutput] = output_options
 
-    [H_l, H_ms, betas, wavelengths] = params
+    [H_l, H_ms, betas, wavelengths, npts, tol] = params
 
     critical_strains = numpy.zeros((len(wavelengths), int(int(len(betas)) * int(len(H_ms) / 4))))
     thresh_strains = numpy.zeros((len(betas), int(len(H_ms) / 4)))
@@ -60,7 +61,7 @@ def solve(H_m_start, segment, mode_name, mode_factor, params):
                 tol
             )
 
-            critical_strains[:, column] = strains_all[:]
+            critical_strains[:, column] = crit_strains[:]
             column = column + 1
             [thresh_wavelengths, thresh_strains] = find_threshold_values(
                 wavelengths,
@@ -117,41 +118,43 @@ if __name__ == '__main__':
     for i in range(18):
         betas[ind_rounded[i]] = beta_rounded[i]
 
-    params = [H_l, H_ms, betas, wavelengths]
+    params = [H_l, H_ms, betas, wavelengths, npts, tol]
 
     # parameters for output
     findroots = True  # only set to false for troubleshooting, using plotroots below
     plotroots = False  # save plot of absolute value of determinant at each n_wavelengths
-    findminimum = True  # find the threshold values
     printoutput = False  # print every root found at every n_wavelengths
+
+    output_options = [findroots, plotroots, printoutput]
 
     ####################################################################################
     # symmetric mode
     ####################################################################################
-    F_sym1 = multiprocessing.Process(target=solve, args=(0, 1, 'sym', 1, params))
-    F_sym1.start()
 
-    F_sym2 = multiprocessing.Process(target=solve, args=(49, 2, 'sym', 1, params))
+    F_sym1 = multiprocessing.Process(target=solve, args=(0, 1, 'sym', 1, params, output_options))
+    F_sym1.start()
+    #
+    F_sym2 = multiprocessing.Process(target=solve, args=(49, 2, 'sym', 1, params,npts))
     F_sym2.start()
 
-    F_sym3 = multiprocessing.Process(target=solve, args=(99, 3, 'sym', 1, params))
+    F_sym3 = multiprocessing.Process(target=solve, args=(99, 3, 'sym', 1, params, npts))
     F_sym3.start()
 
-    F_sym4 = multiprocessing.Process(target=solve, args=(149, 4, 'sym', 1, params))
+    F_sym4 = multiprocessing.Process(target=solve, args=(149, 4, 'sym', 1, params, npts))
     F_sym4.start()
-
-    ####################################################################################
-    # antisymmetric mode
-    ####################################################################################
-
-    F_antisym1 = multiprocessing.Process(target=solve, args=(0, 1, 'antisym', -1, params)) 
+    #
+    # ####################################################################################
+    # # antisymmetric mode
+    # ####################################################################################
+    #
+    F_antisym1 = multiprocessing.Process(target=solve, args=(0, 1, 'antisym', -1, params, npts))
     F_antisym1.star()
 
-    F_antisym2 = multiprocessing.Process(target=solve, args=(49, 2, 'antisym', -1, params))
+    F_antisym2 = multiprocessing.Process(target=solve, args=(49, 2, 'antisym', -1, params, npts))
     F_antisym2.start()
 
-    F_antisym3 = multiprocessing.Process(target=solve, args=(99, 3, 'antisym', -1, params))
+    F_antisym3 = multiprocessing.Process(target=solve, args=(99, 3, 'antisym', -1, params, npts))
     F_antisym3.start()
 
-    F_antisym4 = multiprocessing.Process(target=solve, args=(149, 4, 'antisym', -1, params))
+    F_antisym4 = multiprocessing.Process(target=solve, args=(149, 4, 'antisym', -1, params, npts))
     F_antisym4.start()
