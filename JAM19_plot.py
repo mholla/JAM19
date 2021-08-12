@@ -4,7 +4,7 @@ from math import *
 
 import numpy
 
-from JAM19_subroutines_plot import *
+from JAM19_plot_subroutines import *
 
 if __name__ == '__main__':
 
@@ -41,11 +41,11 @@ if __name__ == '__main__':
     plot_fig3(betas, H_ms, threshold_strain, anti_threshold_strain)
     plot_fig4a(betas, H_ms, threshold_strain)
     plot_fig4b(betas, H_ms, threshold_wavelength)
-    plot_fig5a(betas, threshold_wavelength,new_cmap)
-    plot_fig5b(critical_strains,new_cmap)
-    plot_fig6(critical_strains,new_cmap)
-    plot_fig7a(H_ms, threshold_strain, anti_threshold_strain,new_cmap)
-    plot_fig7b(H_ms, threshold_wavelength, anti_threshold_wavelength,new_cmap)
+    plot_fig5a(betas, threshold_wavelength, new_cmap)
+    plot_fig5b(critical_strains, new_cmap)
+    plot_fig6(critical_strains)
+    plot_fig7a(H_ms, threshold_strain, anti_threshold_strain, new_cmap)
+    plot_fig7b(H_ms, threshold_wavelength, anti_threshold_wavelength, new_cmap)
 
 
 

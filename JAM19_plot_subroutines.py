@@ -134,7 +134,7 @@ def plot_fig4b(betas, H_ms, threshold_wavelength):
     fig_4b.savefig('fig_4b.png', dpi=350)
 
 
-def plot_fig5a(betas, threshold_wavelength,new_cmap):
+def plot_fig5a(betas, threshold_wavelength, new_cmap):
 
     fig_5a = plt.figure(6, figsize=(12, 8))
     ax = fig_5a.add_subplot(111)
@@ -161,7 +161,7 @@ def plot_fig5a(betas, threshold_wavelength,new_cmap):
     fig_5a.savefig('fig_5a.png', dpi=350)
 
 
-def plot_fig5b(critical_strains,new_cmap):
+def plot_fig5b(critical_strains, new_cmap):
     crit_strain_fig5b = forming_crit_strain_fig5b(critical_strains)
     fig_5b = plt.figure(7, figsize=(12, 8))
     ax = fig_5b.add_subplot(111)
@@ -207,7 +207,7 @@ def plot_fig5b(critical_strains,new_cmap):
     fig_5b_inset.savefig('fig_5b_inset.png', dpi=350)
 
 
-def plot_fig6(critical_strains,new_cmap):
+def plot_fig6(critical_strains):
     crit_strain_fig6 = forming_crit_strain_fig6(critical_strains)
     fig_6 = plt.figure(9, figsize=(18, 7))
     ax = fig_6.add_subplot(121)
@@ -248,7 +248,7 @@ def plot_fig6(critical_strains,new_cmap):
     fig_6.savefig('fig_6.png', dpi=350)
 
 
-def plot_fig7a(H_ms, threshold_strain, anti_threshold_strain,new_cmap):
+def plot_fig7a(H_ms, threshold_strain, anti_threshold_strain, new_cmap):
     fig7a = plt.figure(10, figsize=(18, 7))
     ax = fig7a.add_subplot(121)
     ax.set_prop_cycle('color', plt.cm.viridis([0.2, 0.2, 0.35, 0.35, 0.5, 0.5, 0.6, 0.6]))
@@ -292,7 +292,7 @@ def plot_fig7a(H_ms, threshold_strain, anti_threshold_strain,new_cmap):
     fig7a.savefig('fig_7a.png', dpi=350)
 
 
-def plot_fig7b(H_ms,threshold_wavelength, anti_threshold_wavelength,new_cmap):
+def plot_fig7b(H_ms, threshold_wavelength, anti_threshold_wavelength, new_cmap):
     fig7b = plt.figure(11, figsize=(18, 7))
     ax = fig7b.add_subplot(121)
     ax.set_prop_cycle('color', plt.cm.viridis([0.2, 0.2, 0.35, 0.35, 0.5, 0.5, 0.6, 0.6]))
