@@ -394,7 +394,7 @@ def find_roots(mode_factor, H_l, H_m, beta, wavelength, strains, rootexists, a, 
     return strains
 
 
-def find_threshold_values(wavelengths, crit_strains, i, j, thresh_wavelength, thresh_strain):
+def find_threshold_values(wavelengths, crit_strains, i, j, thresh_wavelengths, thresh_strains):
     """ Finds threshold critical strain and corresponding threshold wavelength
 
     Parameters
@@ -407,16 +407,16 @@ def find_threshold_values(wavelengths, crit_strains, i, j, thresh_wavelength, th
         column counter of crit_strains.  j = beta
     i : integer
         row counter of crit_strains. i = H_m
-    thresh_wavelength :
+    thresh_wavelengths :
         critical wavelength (corresponding to critical strain)
-    thresh_strain :
+    thresh_strains :
         minimum critical strain
     Returns
     -------
-    thresh_wavelength : float
-        critical wavelength (corresponding to critical strain)
-    thresh_strain : float
-        minimum critical strain
+    thresh_wavelengths : ndarray float
+        critical wavelengths (corresponding to minimum critical strains)
+    thresh_strains : ndarray float
+        minimum critical strains corresponding to specific values of betas and H_ms
     
     Notes
     -----
@@ -449,7 +449,7 @@ def find_threshold_values(wavelengths, crit_strains, i, j, thresh_wavelength, th
         if abs(crit_strains[0] - strains[index]) < 0.001:
             index = 0
 
-    thresh_wavelength[j, i] = wavelengths[index]
-    thresh_strain[j, i] = crit_strains[index]
+    thresh_wavelengths[j, i] = wavelengths[index]
+    thresh_strains[j, i] = crit_strains[index]
 
-    return thresh_wavelength, thresh_strain
+    return thresh_wavelengths, thresh_strains
