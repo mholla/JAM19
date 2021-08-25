@@ -3,6 +3,7 @@ import matplotlib.colors as colors
 import matplotlib.pyplot as plt
 from matplotlib import cm
 from matplotlib.ticker import MultipleLocator, FormatStrFormatter
+import numpy
 
 def read_data(): 
     # load the results for each parts and concatenate them.
@@ -47,9 +48,9 @@ def read_data():
 def plot_fig3(betas, H_ms, threshold_strain, anti_threshold_strain): 
     Diff_Strain = numpy.zeros((200, 200))
     # iterate through rows
-    for i in range(len(strain)):
+    for i in range(len(threshold_strain)):
         # iterate through columns
-        for j in range(len(strain[0])):
+        for j in range(len(threshold_strain[0])):
             Diff_Strain[i][j] = anti_threshold_strain[i][j] - threshold_strain[i][j]
             if Diff_Strain[i][j] == 0:
                 Diff_Strain[i][j] = 0.0001
@@ -133,8 +134,8 @@ def plot_fig4b(betas, H_ms, threshold_wavelength):
     fig_4b.savefig('fig_4b.png', dpi=350)
 
 
-def plot_fig5a(critical_strains, betas):
-    forming_crit_strain_fig5b(critical_strains)
+def plot_fig5a(betas, threshold_wavelength, new_cmap):
+
     fig_5a = plt.figure(6, figsize=(12, 8))
     ax = fig_5a.add_subplot(111)
     ax.set_prop_cycle('color', plt.cm.viridis(
@@ -148,7 +149,7 @@ def plot_fig5a(critical_strains, betas):
     ax.set_ylim(0., 140.)
     ax.set_xlim(0.1, 1.)
     for j in [0, 3, 5, 8, 18, 28, 38, 48, 58, 68, 79, 89, 99, 124, 149]:
-        ax.plot(betas[:], wavelength[j, :], linestyle='-', linewidth=3)
+        ax.plot(betas[:], threshold_wavelength[j, :], linestyle='-', linewidth=3)
     # Plotting the colorbar
     ax2 = fig_5a.add_axes([0.92, 0.11, 0.015, 0.77])
     ax2.text(0., 1.04, '$ \mathit{\\bar H_m} $', rotation=0, fontsize=20)
@@ -160,7 +161,7 @@ def plot_fig5a(critical_strains, betas):
     fig_5a.savefig('fig_5a.png', dpi=350)
 
 
-def plot_fig5b(critical_strains):
+def plot_fig5b(critical_strains, new_cmap):
     crit_strain_fig5b = forming_crit_strain_fig5b(critical_strains)
     fig_5b = plt.figure(7, figsize=(12, 8))
     ax = fig_5b.add_subplot(111)
@@ -247,7 +248,7 @@ def plot_fig6(critical_strains):
     fig_6.savefig('fig_6.png', dpi=350)
 
 
-def plot_fig7a(H_ms, threshold_strain, anti_threshold_strain):
+def plot_fig7a(H_ms, threshold_strain, anti_threshold_strain, new_cmap):
     fig7a = plt.figure(10, figsize=(18, 7))
     ax = fig7a.add_subplot(121)
     ax.set_prop_cycle('color', plt.cm.viridis([0.2, 0.2, 0.35, 0.35, 0.5, 0.5, 0.6, 0.6]))
@@ -280,18 +281,18 @@ def plot_fig7a(H_ms, threshold_strain, anti_threshold_strain):
     cb1.set_ticks([0.1, 0.5, 1, 1.5, 2])
 
     for j in [9, 29, 49, 70]:
-        ax.axhline(y=strain[199, j], color='gray', linewidth=3.5, linestyle=':')  # plot the IJSS results
+        ax.axhline(y=threshold_strain[199, j], color='gray', linewidth=3.5, linestyle=':')  # plot the IJSS results
         ax.plot(H_ms[:], threshold_strain[:, j], linestyle='-', linewidth=3)
         ax.plot(H_ms[:], anti_threshold_strain[:, j], linestyle='--', linewidth=3)
 
     for j in [128, 148, 169, 189]:
-        ax2.axhline(y=strain[199, j], color='gray', linewidth=3.5, linestyle=':')  # plot the IJSS results
+        ax2.axhline(y=threshold_strain[199, j], color='gray', linewidth=3.5, linestyle=':')  # plot the IJSS results
         ax2.plot(H_ms[:], threshold_strain[:, j], linestyle='-', linewidth=3)
         ax2.plot(H_ms[:], anti_threshold_strain[:, j], linestyle='--', linewidth=3)
     fig7a.savefig('fig_7a.png', dpi=350)
 
 
-def plot_fig7b(threshold_wavelength, anti_threshold_wavelength):
+def plot_fig7b(H_ms, threshold_wavelength, anti_threshold_wavelength, new_cmap):
     fig7b = plt.figure(11, figsize=(18, 7))
     ax = fig7b.add_subplot(121)
     ax.set_prop_cycle('color', plt.cm.viridis([0.2, 0.2, 0.35, 0.35, 0.5, 0.5, 0.6, 0.6]))
@@ -327,12 +328,12 @@ def plot_fig7b(threshold_wavelength, anti_threshold_wavelength):
     ax3.yaxis.set_tick_params(labelsize=15, size=5)
 
     for j in [9, 29, 49, 70]:
-        ax.axhline(y=wavelength[199, j], color='gray', linewidth=3.5, linestyle=':')  # plot the IJSS results
+        ax.axhline(y=threshold_wavelength[199, j], color='gray', linewidth=3.5, linestyle=':')  # plot the IJSS results
         ax.plot(H_ms[:], threshold_wavelength[:, j], linestyle='-', linewidth=3)
         ax.plot(H_ms[:], anti_threshold_wavelength[:, j], linestyle='--', linewidth=3)
 
     for j in [128, 148, 169, 189]:
-        ax2.axhline(y=wavelength[199, j], color='gray', linewidth=3.5, linestyle=':')  # plot the IJSS results
+        ax2.axhline(y=threshold_wavelength[199, j], color='gray', linewidth=3.5, linestyle=':')  # plot the IJSS results
         ax2.plot(H_ms[:], threshold_wavelength[:, j], linestyle='-', linewidth=3)
         ax2.plot(H_ms[:], anti_threshold_wavelength[:, j], linestyle='--', linewidth=3)
     fig7b.savefig('fig_7b.png', dpi=350)

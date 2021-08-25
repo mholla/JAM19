@@ -18,12 +18,13 @@ def determinant(mode_factor, H_l, H_m, beta, wavelength, lam):
     ----------
     mode_factor : integer
         determines symmetric or antisymmetric modes of wrinkling configuration
-    H_l :
+    H_l : integer
+        thickness of each layer (it equals to 1 for simplicity)
     H_m : float
-        half of the distance between two layers
+        half of the distance between two layers (normalized by H_l)
     beta : float
         stiffness ratio (layer/matrix)
-    wavelength : float
+    wavelength : float (normalized by H_l)
         wavelength
     lam : float
         values of compression in 1 direction
@@ -133,22 +134,20 @@ def Ridder(mode_factor, H_l, H_m, beta, wavelength, a, b, determinant, tol):
 
     Parameters
     ----------
-    mode_factor :
-    H_l :
+    mode_factor : integer
+        determines symmetric or antisymmetric modes of wrinkling configuration
+    H_l : integer
+        thickness of each layer (it equals to 1 for simplicity)
     H_m : float
-        half of the distance between two layers
+        half of the distance between two layers (normalized by H_l)
     beta : float
         stiffness ratio (layer/matrix)
     wavelength : float
-        wavelength
+        wavelength (normalized by H_l)
     a, b : float
         upper and lower brackets of lambda for Ridders' method
-    determinant : function
-        return values of determinat for given parameters
     tol : float
         tolerance for Ridders' method; solution will be returned when the absolute value of the function is below the tolerance
-    nmax : int
-        maximum number of iterations before exiting
 
     Returns
     -------
@@ -159,7 +158,7 @@ def Ridder(mode_factor, H_l, H_m, beta, wavelength, a, b, determinant, tol):
 
     Notes
     -----
-    Based on based on https://en.wikipedia.org/wiki/Ridders%27_method
+    Based on https://en.wikipedia.org/wiki/Ridders%27_method
     """
 
     nmax = 50
@@ -224,12 +223,14 @@ def find_critical_values(mode_factor, H_l, H_m, beta, wavelengths, npts, plotroo
     ----------
     mode_factor : integer
         determines symmetric or antisymmetric modes of wrinkling configuration
-    H_l :
-    H_m :
+    H_l : integer
+        thickness of each layer (it equals to 1 for simplicity)
+    H_m : float
+        half of the distance between two layers (normalized by H_l)
     beta : float
         stiffness ratio (layer/matrix)
     wavelengths : list of floats
-        list of wavelengths for which to calculate determinant
+        list of wavelengths (normalized by H_l) for which to calculate determinant
     npts : int
         number of strain values to consider when checking for existence of roots
     plotroots : boolean
@@ -248,47 +249,46 @@ def find_critical_values(mode_factor, H_l, H_m, beta, wavelengths, npts, plotroo
 
     Notes
     -----
-    Called by 19JAM.py
+    Called by JAM19.py
     """
 
     lam_min = 0.01
     lam_max = 0.97
+    lams = numpy.linspace(lam_min, lam_max, npts)[::-1]
     strains = []
 
     for wavelength in wavelengths:
 
-        [rootexists, a, c] = check_roots(mode_factor, H_l, H_m, beta, wavelength, lam_min, lam_max, npts, plotroots, determinant)
+        [rootexists, a, c] = check_roots(mode_factor, lams, H_l, H_m, beta, wavelength, npts, plotroots)
 
         if findroots:
-            strains = find_roots(mode_factor, H_l, H_m, beta, wavelength, strains, rootexists, a, c, printoutput, tol, determinant)
+            strains = find_roots(mode_factor, H_l, H_m, beta, wavelength, strains, rootexists, a, c, printoutput, tol)
 
     if findroots:
         return strains
 
 
-def check_roots(mode_factor, H_l, H_m, beta, wavelength, lam_min, lam_max, npts, plotroots, determinant):
+def check_roots(mode_factor, lams, H_l, H_m, beta, wavelength, npts, plotroots):
     """ Calculates the value and/or sign of the determinant at every lambda 
 
     Parameters
     ----------
     mode_factor : integer
         determines symmetric or antisymmetric modes of wrinkling configuration
-    H_l: float
-        thickness of each layer
+    lams : list of floats
+        list of values of compression in 1 direction
+    H_l: integer
+        thickness of each layer (it equals to 1 for simplicity)
     H_m: float
-        half of the distance between the layers
+        half of the distance between the layers (normalized by H_l)
     beta : float
         stiffness ratio (layer/matrix)
     wavelength : float
-        wavelength
-    lam_min, lam_max : float
-        minimum and maximum values of lambda to check for existence of a root
+        wavelength (normalized by H_l)
     npts : int
         number of points between lam_min and lam_max at which to calculate determinant
     plotroots : boolean
         plot lines showing positive or negative value at all npts
-    determinant : function
-        return values of determinant for given parameters
 
     Returns
     -------
@@ -300,7 +300,6 @@ def check_roots(mode_factor, H_l, H_m, beta, wavelength, lam_min, lam_max, npts,
         upper bracket
     """
 
-    lams = numpy.linspace(lam_min, lam_max, npts)[::-1]
     dds = numpy.zeros(npts, dtype='float64')
     dds_abs = numpy.zeros(npts, dtype='float64')
 
@@ -309,10 +308,10 @@ def check_roots(mode_factor, H_l, H_m, beta, wavelength, lam_min, lam_max, npts,
     c = 0.  # upper bracket
 
     # move backwards, in order of decreasing strain and report values bracking highest root
-    for i in range(n):
+    for i in range(npts):
 
         lam = lams[i]
-        dds[i] = determinant(H_l, H_m, lam, beta, wavelength, mode_factor)
+        dds[i] = determinant(mode_factor, H_l, H_m, beta, wavelength, lam)
 
         # if encountering NaN before finding root:
         if isnan(dds[i]) and not rootexists:
@@ -329,6 +328,7 @@ def check_roots(mode_factor, H_l, H_m, beta, wavelength, lam_min, lam_max, npts,
                 rootexists = True
                 a = lams[i]
                 c = lams[i - 1]
+                break
 
     if plotroots:
         plt.figure()
@@ -342,14 +342,48 @@ def check_roots(mode_factor, H_l, H_m, beta, wavelength, lam_min, lam_max, npts,
     return rootexists, a, c
 
 
-def find_roots(mode_factor, H_l, H_m, beta, wavelength, strains, rootexists, a, c, printoutput, tol, determinant):
+def find_roots(mode_factor, H_l, H_m, beta, wavelength, strains, rootexists, a, c, printoutput, tol):
+    """ Calculates the critical strain for each specified wavelength
+
+    Parameters
+    ----------
+    mode_factor : integer
+        determines symmetric or antisymmetric modes of wrinkling configuration
+    H_l : integer
+        thickness of each layer (it equals to 1 for simplicity)
+    H_m : float
+        half of the distance between two layers (normalized by H_l)
+    beta : float
+        stiffness ratio (layer/matrix)
+    wavelength : float
+        wavelength (normalized by H_l)
+    strains : list of floats
+         list of all critical strains which satisfy Eq. 24 for one beta and one H_m values.
+    rootexists : boolean
+        boolean value indicating whether or not a root (sign change) was detected
+    a : float
+        lower bracket
+    c : float
+        upper bracket
+    printoutput : boolean
+        whether or not to print every root found at every wavelength
+    tol : float
+        tolerance for Ridders' method; solution will be returned when the absolute value of the function is below the tolerance
+
+    Returns
+    -------
+    strains : list of floats
+        list of all critical strains which satisfy Eq. 24 for one beta and one H_m values.
+
+    """
+
     # returns compressive strain (1 - lam) at which buckling occurs for the given parameters
 
     if printoutput:
         print("\nx = %0.2f, a = %f, c = %f" % (wavelength, a, c))
 
     if rootexists:
-        [lam1, n] = Ridder(mode_factor, H_l, H_m, beta, wavelength, a, c, determinant, tol)
+        [lam1, n] = Ridder(mode_factor, H_l, H_m, beta, wavelength, a, c, tol)
         if printoutput: print("lam = %0.5f, n = %d" % (lam1, n))
     else:  # no root means that system is infinitely stable
         lam1 = 0.
@@ -360,7 +394,7 @@ def find_roots(mode_factor, H_l, H_m, beta, wavelength, strains, rootexists, a, 
     return strains
 
 
-def find_threshold_values(wavelengths, crit_strains, j, i, thresh_wavelength, thresh_strain):
+def find_threshold_values(wavelengths, crit_strains, i, j, thresh_wavelengths, thresh_strains):
     """ Finds threshold critical strain and corresponding threshold wavelength
 
     Parameters
@@ -369,17 +403,20 @@ def find_threshold_values(wavelengths, crit_strains, j, i, thresh_wavelength, th
         list of wavelengths
     crit_strains : list of floats
         list of critical strain values corresponding to each wavelength
-    j :
-    i :
-    thresh_wavelength :
-    thresh_strain :
-
+    j : integer
+        column counter of crit_strains.  j = beta
+    i : integer
+        row counter of crit_strains. i = H_m
+    thresh_wavelengths :
+        critical wavelength (corresponding to critical strain)
+    thresh_strains :
+        minimum critical strain
     Returns
     -------
-    thresh_wavelength : float
-        critical wavelength (corresponding to critical strain)
-    thresh_strain : float
-        minimum critical strain
+    thresh_wavelengths : ndarray float
+        critical wavelengths (corresponding to minimum critical strains)
+    thresh_strains : ndarray float
+        minimum critical strains corresponding to specific values of betas and H_ms
     
     Notes
     -----
@@ -412,7 +449,7 @@ def find_threshold_values(wavelengths, crit_strains, j, i, thresh_wavelength, th
         if abs(crit_strains[0] - strains[index]) < 0.001:
             index = 0
 
-    thresh_wavelength[i, j] = wavelengths[index]
-    thresh_strain[i, j] = crit_strains[index]
+    thresh_wavelengths[j, i] = wavelengths[index]
+    thresh_strains[j, i] = crit_strains[index]
 
-    return thresh_wavelength, thresh_strain
+    return thresh_wavelengths, thresh_strains
